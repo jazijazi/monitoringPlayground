@@ -1,0 +1,42 @@
+groups:
+  - name: Instances
+    rules:
+      - alert: InstanceDown 
+        expr: up{job="nginx_exporter"} < 1
+        for: 1m
+        labels: # labels to decide which alert goes to which notification channel
+          severity: critical
+        annotations:
+          summary: 'Instance {{ $labels.instance }} down'
+  
+
+
+  - name: App
+    rules:
+      - alert: InstanceDown 
+        expr: up{job="node_exporter"} < 1
+        for: 1m
+        labels: # labels to decide which alert goes to which notification channel
+          severity: warning
+        annotations:
+          summary: 'The Node Exporter go DOWWWWWWWNNNNNNNN'
+
+  - name: DataBase
+    rules:
+      - alert: InstanceLowMemory
+        expr: node_memory_MemAvailable < 268435456
+        for: 10m
+        labels:
+          severity: high
+        annotations:
+          summary: "Instance {{ $labels.host }}: memory low"
+          description: "{{ $labels.host }} has less than 256M memory available"
+
+      - alert: InstanceLowDisk
+        expr: node_filesystem_avail{mountpoint="/"} < 1073741824
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.host }}: low disk space"
+          description: "{{ $labels.host }} has less than 1G FS space"

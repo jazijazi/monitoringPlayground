@@ -1,0 +1,46 @@
+route:
+  receiver: 'backend-mail' # default receiver
+  repeat_interval: 8h
+  # group_by: [ alertname ]
+
+  routes:
+    - receiver: 'test-url'
+      repeat_interval: 4h
+      matchers:
+        - severity="critical"
+      group_by: [ App ] #???
+
+    - receiver: 'backend-mail'
+      repeat_interval: 4h
+      matchers:
+        - severity="warning"
+      group_by: [ Instances , App ] #???
+
+
+
+
+receivers:
+  - name: 'backend-mail'
+    email_configs:
+      - smarthost: 'smtp.gmail.com:465'
+        auth_username: 'your_mail@gmail.com'
+        auth_password: ""
+        from: 'your_mail@gmail.com'
+        to: 'some_mail@gmail.com'
+
+  - name: 'test-mail'
+    email_configs:
+      - smarthost: 'smtp.gmail.com:789'
+        auth_username: 'ja@gmail.com'
+        auth_password: ""
+        from: 'zi@gmail.com'
+        to: 'tysoil@gmail.com'
+
+  - name: 'test-url'
+    webhook_configs:
+    - url: 'http://127.0.0.1:3333/notif'
+      send_resolved: true
+      http_config:
+        basic_auth:
+          username: admin
+          password: admin
